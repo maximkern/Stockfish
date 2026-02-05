@@ -152,8 +152,14 @@ ExtMove* MovePicker::score(MoveList<Type>& ml) {
         const Piece     capturedPiece = pos.piece_on(to);
 
         if constexpr (Type == CAPTURES)
+        {
+            int promoBonus = (m.promotion_type() == QUEEN)
+                           ? 7 * (int(PieceValue[make_piece(us, QUEEN)]) - PawnValue)
+                           : 0;
             m.value = (*captureHistory)[pc][to][type_of(capturedPiece)]
-                    + 7 * int(PieceValue[capturedPiece]);
+                    + 7 * int(PieceValue[capturedPiece])
+                    + promoBonus;
+        }
 
         else if constexpr (Type == QUIETS)
         {
