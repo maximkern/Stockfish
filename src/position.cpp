@@ -1092,7 +1092,25 @@ void Position::update_piece_threats(Piece                     pc,
     const Bitboard rAttacks = attacks_bb<ROOK>(s, occupied);
     const Bitboard bAttacks = attacks_bb<BISHOP>(s, occupied);
 
-    Bitboard threatened = attacks_bb(pc, s, occupied) & occupied;
+    const PieceType pt = type_of(pc);
+    Bitboard        pcAttacks;
+    switch (pt)
+    {
+    case BISHOP :
+        pcAttacks = bAttacks;
+        break;
+    case ROOK :
+        pcAttacks = rAttacks;
+        break;
+    case QUEEN :
+        pcAttacks = rAttacks | bAttacks;
+        break;
+    default :
+        pcAttacks = attacks_bb(pc, s, occupied);
+        break;
+    }
+
+    Bitboard threatened = pcAttacks & occupied;
     Bitboard sliders    = (rookQueens & rAttacks) | (bishopQueens & bAttacks);
     Bitboard incoming_threats =
       (PseudoAttacks[KNIGHT][s] & knights) | (attacks_bb<PAWN>(s, WHITE) & blackPawns)
